@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة المنتجات - لوحة التحكم</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body>
+
+<div class="container-fluid">
+    <div class="row">
+        
+        <div class="col-md-3 col-lg-2 bg-dark-card min-vh-100 p-3 my-2 d-flex flex-column justify-content-between" style="border-radius: 0 16px 16px 0;">
+            <div>
+                <div class="text-center py-4 border-bottom border-secondary mb-4">
+                    <div id="ownerLogoPlaceholder" class="mb-2 mx-auto overflow-hidden d-flex align-items-center justify-content-center" style="width: 80px; height: 80px; background-color: #151c24; border-radius: 50%; border: 2px solid var(--border-color);">
+                        <i class="fa-solid fa-shop fa-2x text-muted"></i>
+                    </div>
+                    <h6 class="fw-bold mb-0 text-white" id="sidebarStoreName">جاري التحميل...</h6>
+                </div>
+                
+                <nav class="d-flex flex-column gap-1">
+                    <a href="dashboard.html" class="sidebar-link">
+                        <i class="fa-solid fa-receipt me-2"></i>الطلبات الأخيرة
+                    </a>
+                    <a href="products.html" class="sidebar-link active">
+                        <i class="fa-solid fa-box me-2"></i>إدارة المنتجات
+                    </a>
+                    <a href="dashboard.html" class="sidebar-link" id="sidebarSetupRedirect">
+                        <i class="fa-solid fa-sliders me-2"></i>إعدادات الاستور
+                    </a>
+                </nav>
+            </div>
+            
+            <button class="btn btn-outline-danger w-100 btn-sm py-2 fw-bold" id="btnLogout">
+                <i class="fa-solid fa-right-from-bracket me-1"></i>تسجيل الخروج
+            </button>
+        </div>
+
+        <div class="col-md-9 col-lg-10 p-4 p-md-5">
+            
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2 class="fw-bold text-white mb-1">مخزن المنتجات</h2>
+                    <p class="text-muted text-sm mb-0">أضف منتجات جديدة، عدل الأسعار والخصومات، أو تحكم في المخزون المتوفر.</p>
+                </div>
+                <button class="btn btn-accent-custom px-4 py-2 fw-bold" data-bs-toggle="modal" data-bs-target="#productModal" id="btnOpenAddModal">
+                    <i class="fa-solid fa-plus me-1"></i> إضافة منتج جديد
+                </button>
+            </div>
+
+            <div class="card bg-dark-card p-3">
+                <div class="table-responsive">
+                    <table class="table table-dark table-hover align-middle mb-0">
+                        <thead>
+                            <tr class="text-muted border-bottom border-secondary">
+                                <th class="py-3">الصورة</th>
+                                <th class="py-3">اسم المنتج</th>
+                                <th class="py-3">السعر الأصلي</th>
+                                <th class="py-3">سعر الخصم</th>
+                                <th class="py-3">المخزون (Stock)</th>
+                                <th class="py-3">الحالة</th>
+                                <th class="py-3 text-center">إجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="productsTableBody">
+                            <tr>
+                                <td colspan="7" class="text-center py-5 text-white">
+                                    <i class="fa-solid fa-box-open fa-2x mb-2 d-block text-accent"></i>
+                                    جاري تحميل منتجاتك الحالية...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content bg-dark-card border-secondary text-white">
+            <div class="modal-header border-bottom border-secondary">
+                <h5 class="modal-title fw-bold text-accent" id="productModalLabel">إضافة منتج جديد</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="productForm">
+                <div class="modal-body p-4">
+                    <input type="hidden" id="productIdHidden">
+
+                    <div class="row g-3">
+                        <div class="col-md-12">
+                            <label class="form-label text-muted text-sm">اسم المنتج</label>
+                            <input type="text" id="prodName" class="form-control form-control-custom" placeholder="مثال: تيشرت أوفر سايز أسود" required>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label class="form-label text-muted text-sm">السعر الأصلي (Price)</label>
+                            <input type="number" step="0.01" id="prodPrice" class="form-control form-control-custom" placeholder="0.00" required>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label class="form-label text-muted text-sm">سعر الخصم (Sale Price - اختياري)</label>
+                            <input type="number" step="0.01" id="prodSalePrice" class="form-control form-control-custom" placeholder="اتركه 0 إذا لم يوجد خصم">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label text-muted text-sm">كمية المخزون (Stock)</label>
+                            <input type="number" id="prodStock" class="form-control form-control-custom" value="10" required>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label text-muted text-sm">إتاحة المنتج للزبائن</label>
+                            <select id="prodAvailable" class="form-select form-control-custom">
+                                <option value="true" selected>متوفر ويظهر في المتجر</option>
+                                <option value="false">مخفي مؤقتاً</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-12">
+                            <label class="form-label text-muted text-sm">وصف المنتج</label>
+                            <textarea id="prodDescription" class="form-control form-control-custom" rows="3" placeholder="اكتب تفاصيل الخامة، المقاسات، إلخ..."></textarea>
+                        </div>
+
+                        <div class="col-md-12">
+                            <label class="form-label text-muted text-sm">صور المنتج (يمكنك اختيار صورة أو أكثر)</label>
+                            <input type="file" id="prodImagesInput" class="form-control form-control-custom" accept="image/*" multiple>
+                            <div class="form-text text-muted text-xs">في حالة التعديل، اختيار صور جديدة سيقوم باستبدال الصور القديمة في السيرفر.</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-top border-secondary">
+                    <button type="button" class="btn btn-outline-secondary px-4" data-bs-toggle="modal" data-bs-target="#productModal">إلغاء</button>
+                    <button type="submit" class="btn btn-accent-custom px-5 fw-bold" id="btnSubmitProduct">حفظ المنتج</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

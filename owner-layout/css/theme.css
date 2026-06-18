@@ -1,0 +1,470 @@
+/* ==========================================================================
+   THEME — design tokens & shared components
+   Concept: "the receipt that runs the shop" — every order is a paper
+   ticket changing hands between customer and owner. The torn-edge /
+   perforation motif from a real receipt recurs across cards, the
+   sidebar's active state, and the hero.
+   ========================================================================== */
+
+:root {
+  /* Color */
+  --ink: #14181f;            /* near-black backdrop */
+  --ink-soft: #1d2330;
+  --paper: #fbf8f3;          /* warm page background */
+  --paper-dim: #f1ecdf;
+  --accent: #1f9d6b;         /* confident teal-green — primary action */
+  --accent-dark: #167a53;
+  --accent-soft: #e3f3ea;
+  --warn: #e8703a;           /* terracotta — destructive / attention */
+  --warn-soft: #fbe7dc;
+  --slate: #5b6472;          /* secondary text */
+  --slate-light: #9aa3b2;
+  --line: #e3ddcd;           /* hairline border on paper */
+  --line-dark: #2a3140;      /* hairline border on ink */
+
+  /* Type */
+  --font-display: "Fraunces", Georgia, serif;
+  --font-body: "Plus Jakarta Sans", "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", "Courier New", monospace;
+
+  /* Radius & shadow */
+  --r-sm: 8px;
+  --r-md: 14px;
+  --r-lg: 22px;
+  --shadow-card: 0 1px 2px rgba(20, 24, 31, 0.04), 0 8px 24px -8px rgba(20, 24, 31, 0.10);
+  --shadow-pop: 0 12px 32px -8px rgba(20, 24, 31, 0.22);
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 16px;
+  line-height: 1.55;
+}
+
+h1, h2, h3, h4, .display {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent-dark);
+  font-weight: 600;
+}
+
+.text-slate { color: var(--slate) !important; }
+.text-accent { color: var(--accent) !important; }
+
+/* numerals everywhere (prices, counts, ids) get the mono face */
+.num, .price, .stat-value, .order-id, table td.num-col {
+  font-family: var(--font-mono);
+  font-feature-settings: "tnum";
+}
+
+a { text-decoration: none; }
+
+:focus-visible {
+  outline: 2.5px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ==========================================================================
+   BUTTONS
+   ========================================================================== */
+.btn {
+  font-family: var(--font-body);
+  font-weight: 600;
+  border-radius: var(--r-sm);
+  padding: 0.65rem 1.4rem;
+  border: 1.5px solid transparent;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+.btn:active { transform: translateY(1px); }
+
+.btn-accent {
+  background: var(--accent);
+  color: #fff;
+}
+.btn-accent:hover { background: var(--accent-dark); color: #fff; box-shadow: 0 6px 16px -4px rgba(31,157,107,0.45); }
+
+.btn-ink {
+  background: var(--ink);
+  color: var(--paper);
+}
+.btn-ink:hover { background: var(--ink-soft); color: var(--paper); }
+
+.btn-outline-ink {
+  background: transparent;
+  border-color: var(--ink);
+  color: var(--ink);
+}
+.btn-outline-ink:hover { background: var(--ink); color: var(--paper); }
+
+.btn-ghost {
+  background: transparent;
+  color: var(--slate);
+  border-color: var(--line);
+}
+.btn-ghost:hover { background: var(--paper-dim); color: var(--ink); }
+
+.btn-danger-soft {
+  background: var(--warn-soft);
+  color: var(--warn);
+}
+.btn-danger-soft:hover { background: var(--warn); color: #fff; }
+
+.btn-sm { padding: 0.4rem 0.9rem; font-size: 0.85rem; }
+
+/* ==========================================================================
+   NAVBAR (public)
+   ========================================================================== */
+.navbar-brand-mark {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.4rem;
+  color: var(--ink) !important;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.navbar-brand-mark .dot {
+  width: 9px; height: 9px;
+  background: var(--accent);
+  border-radius: 50%;
+  display: inline-block;
+}
+.site-navbar {
+  background: var(--paper);
+  border-bottom: 1px solid var(--line);
+}
+.site-navbar .nav-link {
+  font-weight: 600;
+  color: var(--ink);
+  padding: 0.5rem 1rem;
+}
+.site-navbar .nav-link:hover { color: var(--accent-dark); }
+
+/* ==========================================================================
+   RECEIPT MOTIF (signature element)
+   ========================================================================== */
+.receipt {
+  background: #fff;
+  border-radius: 4px;
+  position: relative;
+  box-shadow: var(--shadow-pop);
+  font-family: var(--font-mono);
+}
+.receipt::before, .receipt::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0;
+  height: 14px;
+  background-image: radial-gradient(circle, var(--paper) 5px, transparent 5.5px);
+  background-size: 18px 18px;
+  background-position: -3px center;
+}
+.receipt::before { top: -7px; }
+.receipt::after { bottom: -7px; transform: rotate(180deg); }
+
+.perf-divider {
+  border: none;
+  border-top: 1.5px dashed var(--line);
+  margin: 1rem 0;
+}
+
+/* ==========================================================================
+   CARDS
+   ========================================================================== */
+.card-soft {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  box-shadow: var(--shadow-card);
+}
+
+.stat-card {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  padding: 1.4rem 1.5rem;
+  position: relative;
+  overflow: hidden;
+}
+.stat-card .stat-label {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--slate-light);
+}
+.stat-card .stat-value {
+  font-size: 2.1rem;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.2;
+}
+.stat-card .stat-trend {
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+/* ==========================================================================
+   FORMS
+   ========================================================================== */
+.form-label {
+  font-weight: 600;
+  font-size: 0.88rem;
+  color: var(--ink);
+  margin-bottom: 0.35rem;
+}
+.form-control, .form-select {
+  border: 1.5px solid var(--line);
+  border-radius: var(--r-sm);
+  padding: 0.65rem 0.9rem;
+  font-family: var(--font-body);
+  background: #fff;
+}
+.form-control:focus, .form-select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+.input-group-text {
+  background: var(--paper-dim);
+  border: 1.5px solid var(--line);
+  color: var(--slate);
+  font-family: var(--font-mono);
+}
+
+.auth-shell {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr;
+}
+@media (min-width: 992px) {
+  .auth-shell { grid-template-columns: 1fr 1fr; }
+}
+.auth-visual {
+  background: var(--ink);
+  color: var(--paper);
+  display: none;
+  position: relative;
+  overflow: hidden;
+}
+@media (min-width: 992px) { .auth-visual { display: flex; } }
+
+/* ==========================================================================
+   BADGES (order status)
+   ========================================================================== */
+.badge-status {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 0.35rem 0.7rem;
+  border-radius: 100px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.badge-status::before {
+  content: "";
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.badge-pending  { background: #fdf3df; color: #a3700a; }
+.badge-confirmed{ background: var(--accent-soft); color: var(--accent-dark); }
+.badge-shipped  { background: #e2eefc; color: #1a5bb8; }
+.badge-delivered{ background: #e7f3e1; color: #357a2c; }
+.badge-cancelled{ background: var(--warn-soft); color: var(--warn); }
+
+/* ==========================================================================
+   DASHBOARD SHELL (sidebar off-canvas)
+   ========================================================================== */
+.dash-body { background: var(--paper-dim); }
+
+.dash-topbar {
+  background: #fff;
+  border-bottom: 1px solid var(--line);
+  height: 64px;
+  position: sticky;
+  top: 0;
+  z-index: 1020;
+}
+
+.sidebar-toggle-btn {
+  width: 40px; height: 40px;
+  border-radius: var(--r-sm);
+  border: 1.5px solid var(--line);
+  background: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.sidebar-toggle-btn:hover { background: var(--paper-dim); }
+
+.dash-sidebar {
+  background: var(--ink);
+  color: var(--paper);
+  width: 264px;
+}
+.dash-sidebar .brand {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.25rem;
+  color: #fff;
+  padding: 1.3rem 1.4rem;
+  border-bottom: 1px solid var(--line-dark);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.dash-sidebar .brand .dot { width: 8px; height: 8px; background: var(--accent); border-radius: 50%; }
+
+.dash-nav { padding: 1rem 0.85rem; }
+.dash-nav .nav-section-label {
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--slate-light);
+  padding: 0.6rem 0.65rem 0.4rem;
+}
+.dash-nav .nav-link {
+  color: #c9cdd6;
+  font-weight: 600;
+  font-size: 0.93rem;
+  padding: 0.65rem 0.8rem;
+  border-radius: var(--r-sm);
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  margin-bottom: 0.15rem;
+  position: relative;
+}
+.dash-nav .nav-link svg { width: 18px; height: 18px; flex-shrink: 0; opacity: 0.85; }
+.dash-nav .nav-link:hover { background: rgba(255,255,255,0.06); color: #fff; }
+.dash-nav .nav-link.active {
+  background: rgba(31,157,107,0.16);
+  color: #fff;
+}
+.dash-nav .nav-link.active::before {
+  content: "";
+  position: absolute;
+  left: -0.85rem;
+  top: 0; bottom: 0;
+  width: 3px;
+  background: var(--accent);
+  border-radius: 0 3px 3px 0;
+}
+.dash-nav .nav-link .badge-count {
+  margin-left: auto;
+  background: var(--accent);
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  padding: 0.1rem 0.45rem;
+  border-radius: 100px;
+}
+
+.dash-sidebar .sidebar-footer {
+  border-top: 1px solid var(--line-dark);
+  padding: 1rem 1.4rem;
+  margin-top: auto;
+}
+.dash-sidebar .store-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+.dash-sidebar .store-chip .avatar {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-family: var(--font-display);
+  flex-shrink: 0;
+}
+.dash-sidebar .store-chip small { color: var(--slate-light); }
+
+.dash-main { padding: 1.75rem; }
+@media (min-width: 992px) { .dash-main { padding: 2.25rem 2.5rem; } }
+
+.page-header { margin-bottom: 1.75rem; }
+.page-header .eyebrow { display: block; margin-bottom: 0.3rem; }
+
+/* table */
+.table-receipt {
+  background: #fff;
+  border-radius: var(--r-md);
+  overflow: hidden;
+  border: 1px solid var(--line);
+}
+.table-receipt thead th {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--slate-light);
+  background: var(--paper-dim);
+  border-bottom: 1px solid var(--line);
+  font-weight: 600;
+  padding: 0.85rem 1rem;
+}
+.table-receipt tbody td {
+  padding: 0.9rem 1rem;
+  vertical-align: middle;
+  border-bottom: 1px solid var(--line);
+  color: var(--ink);
+}
+.table-receipt tbody tr:last-child td { border-bottom: none; }
+.table-receipt tbody tr:hover { background: #fbfaf6; }
+
+.product-thumb {
+  width: 46px; height: 46px;
+  border-radius: var(--r-sm);
+  object-fit: cover;
+  border: 1px solid var(--line);
+  background: var(--paper-dim);
+}
+
+/* empty state */
+.empty-state {
+  text-align: center;
+  padding: 3.5rem 1.5rem;
+}
+.empty-state .icon-wrap {
+  width: 64px; height: 64px;
+  border-radius: 50%;
+  background: var(--paper-dim);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.2rem;
+  color: var(--slate-light);
+}
+
+/* offcanvas tweaks */
+.offcanvas.dash-sidebar { border-right: none; }
+.offcanvas-backdrop.show { opacity: 0.55; }
+
+@media (min-width: 992px) {
+  .sidebar-toggle-btn.mobile-only { display: none; }
+}

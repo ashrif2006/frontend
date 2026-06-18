@@ -1,0 +1,75 @@
+/* الألوان الأساسية للمتجر المودرن */
+:root {
+    --bg-main: #0b0c10;
+    --bg-card: #1f2833;
+    --text-primary: #c5c6c7;
+    --text-white: #ffffff;
+    --accent-color: #45f3ff; /* لون نيون مميز للأزرار والفوكس */
+    --border-color: #2c3540;
+}
+
+body {
+    background-color: var(--bg-main);
+    color: var(--text-primary);
+    font-family: system-ui, -apple-system, sans-serif;
+}
+
+/* الكروت الداكنة */
+.bg-dark-card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+}
+
+/* الأزرار المخصصة */
+.btn-accent-custom {
+    background: linear-gradient(45deg, #00adb5, var(--accent-color));
+    color: #000;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.btn-accent-custom:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(69, 243, 255, 0.4);
+    color: #000;
+}
+
+/* حقول الإدخال الاحترافية */
+.form-control-custom {
+    background-color: #151c24 !important;
+    border: 1px solid var(--border-color) !important;
+    color: var(--text-white) !important;
+    border-radius: 8px;
+    padding: 12px;
+}
+
+.form-control-custom:focus {
+    border-color: var(--accent-color) !important;
+    box-shadow: 0 0 8px rgba(69, 243, 255, 0.2) !important;
+}
+
+/* القائمة الجانبية */
+.sidebar-link {
+    color: #a0a5b0;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    padding: 14px 20px;
+    border-radius: 10px;
+    margin-bottom: 8px;
+    transition: all 0.2s ease;
+}
+
+.sidebar-link:hover, .sidebar-link.active {
+    background-color: #2c3540;
+    color: var(--accent-color);
+    font-weight: bold;
+}
+
+.text-accent {
+    color: var(--accent-color);
+}
