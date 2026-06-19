@@ -1,148 +1,331 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>إدارة المنتجات - لوحة التحكم</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="css/dashboard.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>المنتجات — دكّان</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Cairo:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link href="css/theme.css" rel="stylesheet">
+
+  <style>
+    body { font-family: "Plus Jakarta Sans","Cairo",sans-serif; }
+    h1,h2,h3,h4,.display { font-family:"Fraunces","Cairo",serif; }
+    .eyebrow,.num,.price,.stat-value { font-family:"JetBrains Mono",monospace; }
+
+    .dash-layout { display:flex; min-height:100vh; }
+    .dash-sidebar-desktop { width:264px; flex-shrink:0; display:none; flex-direction:column; position:sticky; top:0; height:100vh; overflow-y:auto; }
+    @media (min-width:992px){ .dash-sidebar-desktop{ display:flex; } }
+    .dash-content { flex:1; min-width:0; display:flex; flex-direction:column; }
+    .dash-topbar { display:flex; align-items:center; justify-content:space-between; padding:0 1.5rem; gap:1rem; }
+    .topbar-avatar { width:38px; height:38px; border-radius:50%; background:var(--accent); color:#fff; display:flex; align-items:center; justify-content:center; font-family:"Fraunces",serif; font-weight:700; cursor:pointer; }
+
+    /* grid/list toggle */
+    .view-toggle button { border:1.5px solid var(--line); background:#fff; padding:0.4rem 0.65rem; border-radius:var(--r-sm); color:var(--slate); cursor:pointer; }
+    .view-toggle button.active { border-color:var(--accent); background:var(--accent-soft); color:var(--accent-dark); }
+
+    /* product card (grid view) */
+    .product-card {
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius:var(--r-md);
+      overflow:hidden;
+      display:flex; flex-direction:column;
+      transition: box-shadow 0.15s;
+    }
+    .product-card:hover { box-shadow: var(--shadow-pop); }
+    .product-card .p-img {
+      width:100%; aspect-ratio:1/1; object-fit:cover;
+      background: var(--paper-dim);
+      display:flex; align-items:center; justify-content:center;
+      color:var(--slate-light);
+    }
+    .product-card .p-img img { width:100%; height:100%; object-fit:cover; }
+    .product-card .p-body { padding: 0.9rem 1rem; flex:1; display:flex; flex-direction:column; }
+    .product-card .p-name { font-weight:700; font-size:0.95rem; }
+    .product-card .p-price { font-family:"JetBrains Mono",monospace; font-weight:700; color:var(--accent-dark); font-size:1rem; }
+    .product-card .p-price .p-sale { text-decoration:line-through; color:var(--slate-light); font-size:0.82rem; margin-right:0.3rem; }
+    .product-card .p-stock { font-family:"JetBrains Mono",monospace; font-size:0.75rem; color:var(--slate); }
+    .product-card .p-stock.low { color:var(--warn); font-weight:600; }
+    .product-card .p-actions { display:flex; gap:0.5rem; padding: 0 1rem 0.85rem; }
+
+    /* availability toggle */
+    .avail-badge { font-size:0.75rem; font-family:"JetBrains Mono",monospace; padding:0.2rem 0.5rem; border-radius:100px; font-weight:600; }
+    .avail-badge.on { background:var(--accent-soft); color:var(--accent-dark); }
+    .avail-badge.off { background:var(--paper-dim); color:var(--slate-light); }
+
+    /* filter bar */
+    .filter-bar { display:flex; align-items:center; gap:0.75rem; flex-wrap:wrap; }
+    .filter-chip { border:1.5px solid var(--line); background:#fff; border-radius:100px; padding:0.35rem 1rem; font-size:0.85rem; font-weight:600; cursor:pointer; color:var(--slate); transition:0.12s; }
+    .filter-chip:hover,.filter-chip.active { border-color:var(--accent); color:var(--accent-dark); background:var(--accent-soft); }
+  </style>
 </head>
-<body>
+<body class="dash-body">
+<div class="dash-layout">
 
-<div class="container-fluid">
-    <div class="row">
-        
-        <div class="col-md-3 col-lg-2 bg-dark-card min-vh-100 p-3 my-2 d-flex flex-column justify-content-between" style="border-radius: 0 16px 16px 0;">
-            <div>
-                <div class="text-center py-4 border-bottom border-secondary mb-4">
-                    <div id="ownerLogoPlaceholder" class="mb-2 mx-auto overflow-hidden d-flex align-items-center justify-content-center" style="width: 80px; height: 80px; background-color: #151c24; border-radius: 50%; border: 2px solid var(--border-color);">
-                        <i class="fa-solid fa-shop fa-2x text-muted"></i>
-                    </div>
-                    <h6 class="fw-bold mb-0 text-white" id="sidebarStoreName">جاري التحميل...</h6>
-                </div>
-                
-                <nav class="d-flex flex-column gap-1">
-                    <a href="dashboard.html" class="sidebar-link">
-                        <i class="fa-solid fa-receipt me-2"></i>الطلبات الأخيرة
-                    </a>
-                    <a href="products.html" class="sidebar-link active">
-                        <i class="fa-solid fa-box me-2"></i>إدارة المنتجات
-                    </a>
-                    <a href="dashboard.html" class="sidebar-link" id="sidebarSetupRedirect">
-                        <i class="fa-solid fa-sliders me-2"></i>إعدادات الاستور
-                    </a>
-                </nav>
-            </div>
-            
-            <button class="btn btn-outline-danger w-100 btn-sm py-2 fw-bold" id="btnLogout">
-                <i class="fa-solid fa-right-from-bracket me-1"></i>تسجيل الخروج
-            </button>
-        </div>
-
-        <div class="col-md-9 col-lg-10 p-4 p-md-5">
-            
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div>
-                    <h2 class="fw-bold text-white mb-1">مخزن المنتجات</h2>
-                    <p class="text-muted text-sm mb-0">أضف منتجات جديدة، عدل الأسعار والخصومات، أو تحكم في المخزون المتوفر.</p>
-                </div>
-                <button class="btn btn-accent-custom px-4 py-2 fw-bold" data-bs-toggle="modal" data-bs-target="#productModal" id="btnOpenAddModal">
-                    <i class="fa-solid fa-plus me-1"></i> إضافة منتج جديد
-                </button>
-            </div>
-
-            <div class="card bg-dark-card p-3">
-                <div class="table-responsive">
-                    <table class="table table-dark table-hover align-middle mb-0">
-                        <thead>
-                            <tr class="text-muted border-bottom border-secondary">
-                                <th class="py-3">الصورة</th>
-                                <th class="py-3">اسم المنتج</th>
-                                <th class="py-3">السعر الأصلي</th>
-                                <th class="py-3">سعر الخصم</th>
-                                <th class="py-3">المخزون (Stock)</th>
-                                <th class="py-3">الحالة</th>
-                                <th class="py-3 text-center">إجراءات</th>
-                            </tr>
-                        </thead>
-                        <tbody id="productsTableBody">
-                            <tr>
-                                <td colspan="7" class="text-center py-5 text-white">
-                                    <i class="fa-solid fa-box-open fa-2x mb-2 d-block text-accent"></i>
-                                    جاري تحميل منتجاتك الحالية...
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-        </div>
+  <!-- sidebar desktop -->
+  <aside class="dash-sidebar dash-sidebar-desktop">
+    <div class="brand"><span class="dot"></span> دكّان</div>
+    <nav class="dash-nav">
+      <span class="nav-section-label">الرئيسية</span>
+      <a href="dashboard.html" class="nav-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        لوحة التحكم
+      </a>
+      <span class="nav-section-label mt-2">المتجر</span>
+      <a href="products.html" class="nav-link active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+        المنتجات
+      </a>
+      <a href="orders.html" class="nav-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/><path d="M9 12h6M9 16h4"/></svg>
+        الطلبات
+        <span class="badge-count">3</span>
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="store-chip">
+        <div class="avatar">س</div>
+        <div><div class="fw-semibold text-white" style="font-size:0.9rem;">متجر سارة</div><small>sara-store</small></div>
+      </div>
     </div>
+  </aside>
+
+  <!-- offcanvas mobile -->
+  <div class="offcanvas offcanvas-end dash-sidebar" tabindex="-1" id="mobileSidebar" style="width:264px;">
+    <div class="offcanvas-header border-0 p-0">
+      <div class="brand w-100"><span class="dot"></span> دكّان
+        <button type="button" class="btn-close btn-close-white ms-auto" data-bs-dismiss="offcanvas"></button>
+      </div>
+    </div>
+    <nav class="dash-nav">
+      <span class="nav-section-label">الرئيسية</span>
+      <a href="dashboard.html" class="nav-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        لوحة التحكم
+      </a>
+      <span class="nav-section-label mt-2">المتجر</span>
+      <a href="products.html" class="nav-link active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+        المنتجات
+      </a>
+      <a href="orders.html" class="nav-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/></svg>
+        الطلبات <span class="badge-count">3</span>
+      </a>
+    </nav>
+    <div class="sidebar-footer mt-auto">
+      <div class="store-chip">
+        <div class="avatar">س</div>
+        <div><div class="fw-semibold text-white" style="font-size:0.9rem;">متجر سارة</div><small>sara-store</small></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- main -->
+  <div class="dash-content">
+    <header class="dash-topbar">
+      <div class="d-flex align-items-center gap-3">
+        <button class="sidebar-toggle-btn mobile-only" data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <span style="font-weight:700; font-size:1rem;">المنتجات</span>
+      </div>
+      <div class="d-flex align-items-center gap-2">
+        <a href="product-form.html" class="btn btn-accent btn-sm">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-left:4px;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          منتج جديد
+        </a>
+        <div class="topbar-avatar">س</div>
+      </div>
+    </header>
+
+    <main class="dash-main">
+      <!-- page header + filters -->
+      <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+        <div>
+          <span class="eyebrow">إدارة المخزون</span>
+          <h1 class="h3 mt-1 mb-0">المنتجات</h1>
+        </div>
+        <a href="product-form.html" class="btn btn-accent d-none d-md-inline-flex align-items-center gap-2">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          إضافة منتج
+        </a>
+      </div>
+
+      <!-- search + filter bar -->
+      <div class="d-flex flex-wrap gap-3 align-items-center mb-4">
+        <div class="position-relative" style="flex:1; min-width:200px; max-width:360px;">
+          <span style="position:absolute; left:0.8rem; top:50%; transform:translateY(-50%); color:var(--slate-light);">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          </span>
+          <input type="search" class="form-control" style="padding-right:0.85rem; padding-left:2.4rem;" placeholder="ابحث باسم المنتج…">
+        </div>
+        <div class="filter-bar">
+          <span class="filter-chip active">الكل (16)</span>
+          <span class="filter-chip">متاح (14)</span>
+          <span class="filter-chip">نفد المخزون (2)</span>
+        </div>
+        <div class="view-toggle me-auto d-none d-md-flex gap-1">
+          <button class="active" title="شبكة">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+          </button>
+          <button title="قائمة">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- products grid -->
+      <div class="row g-3">
+
+        <!-- product 1 -->
+        <div class="col-6 col-md-4 col-xl-3">
+          <div class="product-card">
+            <div class="p-img">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+            </div>
+            <div class="p-body">
+              <div class="d-flex justify-content-between align-items-start mb-1">
+                <div class="p-name">طقم خواتم فضة</div>
+                <span class="avail-badge on">متاح</span>
+              </div>
+              <div class="p-price">225 ج.م <span class="p-sale">280</span></div>
+              <div class="p-stock low mt-1">⚠ متبقي 2 فقط</div>
+            </div>
+            <div class="p-actions">
+              <a href="product-form.html?id=1" class="btn btn-ghost btn-sm flex-fill">تعديل</a>
+              <button class="btn btn-danger-soft btn-sm" title="حذف">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- product 2 -->
+        <div class="col-6 col-md-4 col-xl-3">
+          <div class="product-card">
+            <div class="p-img">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 3"/></svg>
+            </div>
+            <div class="p-body">
+              <div class="d-flex justify-content-between align-items-start mb-1">
+                <div class="p-name">حلق دائري ذهبي</div>
+                <span class="avail-badge on">متاح</span>
+              </div>
+              <div class="p-price">150 ج.م</div>
+              <div class="p-stock low mt-1">⚠ متبقي 4 فقط</div>
+            </div>
+            <div class="p-actions">
+              <a href="product-form.html?id=2" class="btn btn-ghost btn-sm flex-fill">تعديل</a>
+              <button class="btn btn-danger-soft btn-sm">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- product 3 -->
+        <div class="col-6 col-md-4 col-xl-3">
+          <div class="product-card">
+            <div class="p-img">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            </div>
+            <div class="p-body">
+              <div class="d-flex justify-content-between align-items-start mb-1">
+                <div class="p-name">عقد لؤلؤ أبيض</div>
+                <span class="avail-badge on">متاح</span>
+              </div>
+              <div class="p-price">380 ج.م</div>
+              <div class="p-stock mt-1">المخزون: 12</div>
+            </div>
+            <div class="p-actions">
+              <a href="product-form.html?id=3" class="btn btn-ghost btn-sm flex-fill">تعديل</a>
+              <button class="btn btn-danger-soft btn-sm">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- product 4 - unavailable -->
+        <div class="col-6 col-md-4 col-xl-3">
+          <div class="product-card" style="opacity:0.7;">
+            <div class="p-img" style="background:#f0f0ef;">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+            </div>
+            <div class="p-body">
+              <div class="d-flex justify-content-between align-items-start mb-1">
+                <div class="p-name">سوار نحاسي</div>
+                <span class="avail-badge off">مخفي</span>
+              </div>
+              <div class="p-price">95 ج.م</div>
+              <div class="p-stock mt-1">المخزون: 0</div>
+            </div>
+            <div class="p-actions">
+              <a href="product-form.html?id=4" class="btn btn-ghost btn-sm flex-fill">تعديل</a>
+              <button class="btn btn-danger-soft btn-sm">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- add new placeholder -->
+        <div class="col-6 col-md-4 col-xl-3">
+          <a href="product-form.html" class="product-card text-decoration-none" style="min-height:200px; align-items:center; justify-content:center; border-style:dashed; background:transparent;">
+            <div class="text-center p-4">
+              <div style="width:48px; height:48px; border-radius:50%; background:var(--accent-soft); color:var(--accent-dark); display:flex; align-items:center; justify-content:center; margin:0 auto 0.8rem;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              </div>
+              <span class="fw-semibold text-slate">إضافة منتج جديد</span>
+            </div>
+          </a>
+        </div>
+
+      </div>
+    </main>
+  </div>
 </div>
 
-<div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content bg-dark-card border-secondary text-white">
-            <div class="modal-header border-bottom border-secondary">
-                <h5 class="modal-title fw-bold text-accent" id="productModalLabel">إضافة منتج جديد</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form id="productForm">
-                <div class="modal-body p-4">
-                    <input type="hidden" id="productIdHidden">
-
-                    <div class="row g-3">
-                        <div class="col-md-12">
-                            <label class="form-label text-muted text-sm">اسم المنتج</label>
-                            <input type="text" id="prodName" class="form-control form-control-custom" placeholder="مثال: تيشرت أوفر سايز أسود" required>
-                        </div>
-                        
-                        <div class="col-md-6">
-                            <label class="form-label text-muted text-sm">السعر الأصلي (Price)</label>
-                            <input type="number" step="0.01" id="prodPrice" class="form-control form-control-custom" placeholder="0.00" required>
-                        </div>
-                        
-                        <div class="col-md-6">
-                            <label class="form-label text-muted text-sm">سعر الخصم (Sale Price - اختياري)</label>
-                            <input type="number" step="0.01" id="prodSalePrice" class="form-control form-control-custom" placeholder="اتركه 0 إذا لم يوجد خصم">
-                        </div>
-
-                        <div class="col-md-6">
-                            <label class="form-label text-muted text-sm">كمية المخزون (Stock)</label>
-                            <input type="number" id="prodStock" class="form-control form-control-custom" value="10" required>
-                        </div>
-
-                        <div class="col-md-6">
-                            <label class="form-label text-muted text-sm">إتاحة المنتج للزبائن</label>
-                            <select id="prodAvailable" class="form-select form-control-custom">
-                                <option value="true" selected>متوفر ويظهر في المتجر</option>
-                                <option value="false">مخفي مؤقتاً</option>
-                            </select>
-                        </div>
-
-                        <div class="col-md-12">
-                            <label class="form-label text-muted text-sm">وصف المنتج</label>
-                            <textarea id="prodDescription" class="form-control form-control-custom" rows="3" placeholder="اكتب تفاصيل الخامة، المقاسات، إلخ..."></textarea>
-                        </div>
-
-                        <div class="col-md-12">
-                            <label class="form-label text-muted text-sm">صور المنتج (يمكنك اختيار صورة أو أكثر)</label>
-                            <input type="file" id="prodImagesInput" class="form-control form-control-custom" accept="image/*" multiple>
-                            <div class="form-text text-muted text-xs">في حالة التعديل، اختيار صور جديدة سيقوم باستبدال الصور القديمة في السيرفر.</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer border-top border-secondary">
-                    <button type="button" class="btn btn-outline-secondary px-4" data-bs-toggle="modal" data-bs-target="#productModal">إلغاء</button>
-                    <button type="submit" class="btn btn-accent-custom px-5 fw-bold" id="btnSubmitProduct">حفظ المنتج</button>
-                </div>
-            </form>
+<!-- delete confirm modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0" style="border-radius:var(--r-md); font-family:'Plus Jakarta Sans',sans-serif;">
+      <div class="modal-body p-4 text-center">
+        <div class="empty-state">
+          <div class="icon-wrap" style="background:var(--warn-soft); color:var(--warn);">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+          </div>
+          <h5 class="mt-0">حذف المنتج؟</h5>
+          <p class="text-slate">هتشيل المنتج ده نهائيًا من المتجر. الخطوة دي مش ممكن ترجعها.</p>
         </div>
+        <div class="d-flex gap-2 justify-content-center">
+          <button class="btn btn-ghost" data-bs-dismiss="modal">إلغاء</button>
+          <button class="btn btn-danger-soft">حذف</button>
+        </div>
+      </div>
     </div>
+  </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  // filter chips UI
+  document.querySelectorAll('.filter-chip').forEach(chip => {
+    chip.addEventListener('click', function() {
+      document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+      this.classList.add('active');
+    });
+  });
+  // view toggle
+  document.querySelectorAll('.view-toggle button').forEach(btn => {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.view-toggle button').forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+    });
+  });
+</script>
 </body>
 </html>

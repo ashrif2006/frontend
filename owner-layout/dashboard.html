@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>لوحة التحكم — دكّان</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Cairo:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link href="css/theme.css" rel="stylesheet">
+
+  <style>
+    body { font-family: "Plus Jakarta Sans", "Cairo", sans-serif; }
+    h1,h2,h3,h4,.display { font-family: "Fraunces","Cairo",serif; }
+    .eyebrow,.num,.price,.stat-value,.order-id { font-family: "JetBrains Mono",monospace; }
+
+    .dash-layout { display:flex; min-height:100vh; }
+
+    /* ---- Sidebar desktop ---- */
+    .dash-sidebar-desktop {
+      width: 264px;
+      flex-shrink: 0;
+      display: none;
+      flex-direction: column;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+    }
+    @media (min-width:992px) { .dash-sidebar-desktop { display:flex; } }
+
+    .dash-content { flex: 1; min-width: 0; display:flex; flex-direction:column; }
+
+    /* topbar */
+    .dash-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 1.5rem;
+      gap: 1rem;
+    }
+    .topbar-search {
+      flex: 1; max-width: 340px;
+      position: relative;
+    }
+    .topbar-search input {
+      border: 1.5px solid var(--line);
+      border-radius: var(--r-sm);
+      padding: 0.5rem 0.85rem 0.5rem 2.6rem;
+      font-family: var(--font-body);
+      background: var(--paper-dim);
+      width: 100%;
+      font-size: 0.9rem;
+    }
+    .topbar-search input:focus { outline: none; border-color: var(--accent); background:#fff; }
+    .topbar-search .search-icon {
+      position:absolute; left:0.8rem; top:50%; transform:translateY(-50%);
+      color: var(--slate-light); pointer-events:none;
+    }
+    .topbar-right { display:flex; align-items:center; gap:0.7rem; }
+    .topbar-avatar {
+      width:38px; height:38px; border-radius:50%;
+      background: var(--accent); color:#fff;
+      display:flex; align-items:center; justify-content:center;
+      font-family: "Fraunces",serif; font-weight:700; font-size:1rem;
+      cursor:pointer;
+    }
+
+    /* stat cards accent stripe */
+    .stat-card .accent-bar {
+      position:absolute; top:0; right:0; bottom:0;
+      width: 4px;
+      border-radius: 0 var(--r-md) var(--r-md) 0;
+    }
+    .stat-card.c-green .accent-bar { background: var(--accent); }
+    .stat-card.c-orange .accent-bar { background: var(--warn); }
+    .stat-card.c-blue .accent-bar { background: #3a7ee8; }
+    .stat-card.c-purple .accent-bar { background: #7c3ae8; }
+
+    /* recent orders mini table */
+    .order-row-mini {
+      display:flex;
+      align-items:center;
+      gap:1rem;
+      padding: 0.85rem 1rem;
+      border-bottom: 1px solid var(--line);
+    }
+    .order-row-mini:last-child { border-bottom: none; }
+    .order-row-mini .customer-init {
+      width:36px; height:36px; border-radius:50%;
+      background: var(--paper-dim);
+      display:flex; align-items:center; justify-content:center;
+      font-weight:700; font-size:0.9rem; color:var(--slate);
+      flex-shrink:0;
+    }
+    .order-row-mini .order-info { flex:1; min-width:0; }
+    .order-row-mini .cname { font-weight:600; font-size:0.92rem; }
+    .order-row-mini .oid { font-family:"JetBrains Mono",monospace; font-size:0.75rem; color:var(--slate-light); }
+    .order-row-mini .price { font-family:"JetBrains Mono",monospace; font-weight:700; font-size:0.92rem; flex-shrink:0; }
+
+    /* quick actions */
+    .quick-action {
+      display:flex; align-items:center; gap:0.9rem;
+      padding: 0.9rem 1rem;
+      border: 1.5px solid var(--line);
+      border-radius: var(--r-md);
+      background:#fff;
+      text-decoration:none; color: var(--ink);
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .quick-action:hover { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); color:var(--ink); }
+    .quick-action .qa-icon {
+      width:42px; height:42px; border-radius:var(--r-sm);
+      display:flex; align-items:center; justify-content:center;
+      flex-shrink:0;
+    }
+  </style>
+</head>
+
+<body class="dash-body">
+<div class="dash-layout">
+
+  <!-- ======= SIDEBAR DESKTOP ======= -->
+  <aside class="dash-sidebar dash-sidebar-desktop">
+    <div class="brand"><span class="dot"></span> دكّان</div>
+
+    <nav class="dash-nav">
+      <span class="nav-section-label">الرئيسية</span>
+      <a href="dashboard.html" class="nav-link active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        لوحة التحكم
+      </a>
+
+      <span class="nav-section-label mt-2">المتجر</span>
+      <a href="products.html" class="nav-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+        المنتجات
+      </a>
+      <a href="orders.html" class="nav-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/><path d="M9 12h6M9 16h4"/></svg>
+        الطلبات
+        <span class="badge-count">3</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="store-chip">
+        <div class="avatar">س</div>
+        <div>
+          <div class="fw-semibold text-white" style="font-size:0.9rem;">متجر سارة</div>
+          <small>sara-store</small>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ======= OFFCANVAS SIDEBAR (mobile) ======= -->
+  <div class="offcanvas offcanvas-end dash-sidebar" tabindex="-1" id="mobileSidebar" style="width:264px;">
+    <div class="offcanvas-header border-0 p-0">
+      <div class="brand w-100"><span class="dot"></span> دكّان
+        <button type="button" class="btn-close btn-close-white ms-auto" data-bs-dismiss="offcanvas"></button>
+      </div>
+    </div>
+    <nav class="dash-nav">
+      <span class="nav-section-label">الرئيسية</span>
+      <a href="dashboard.html" class="nav-link active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        لوحة التحكم
+      </a>
+      <span class="nav-section-label mt-2">المتجر</span>
+      <a href="products.html" class="nav-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+        المنتجات
+      </a>
+      <a href="orders.html" class="nav-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/><path d="M9 12h6M9 16h4"/></svg>
+        الطلبات
+        <span class="badge-count">3</span>
+      </a>
+    </nav>
+    <div class="sidebar-footer mt-auto">
+      <div class="store-chip">
+        <div class="avatar">س</div>
+        <div>
+          <div class="fw-semibold text-white" style="font-size:0.9rem;">متجر سارة</div>
+          <small>sara-store</small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======= MAIN CONTENT ======= -->
+  <div class="dash-content">
+
+    <!-- topbar -->
+    <header class="dash-topbar">
+      <div class="d-flex align-items-center gap-3">
+        <button class="sidebar-toggle-btn mobile-only" data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <div class="topbar-search d-none d-md-block">
+          <span class="search-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>
+          <input type="search" placeholder="ابحث عن منتج أو طلب…">
+        </div>
+      </div>
+      <div class="topbar-right">
+        <button class="sidebar-toggle-btn position-relative">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <span class="position-absolute top-0 start-0 badge rounded-pill bg-danger" style="font-size:0.6rem; padding:2px 4px; transform:translate(-20%,-20%)">3</span>
+        </button>
+        <div class="topbar-avatar">س</div>
+      </div>
+    </header>
+
+    <!-- page content -->
+    <main class="dash-main">
+
+      <!-- header -->
+      <div class="page-header">
+        <span class="eyebrow">مرحبًا بك</span>
+        <h1 class="h3 mt-1 mb-0">لوحة التحكم</h1>
+        <p class="text-slate mb-0 mt-1">إثنين، 18 يونيو 2025</p>
+      </div>
+
+      <!-- stat cards -->
+      <div class="row g-3 mb-4">
+        <div class="col-6 col-lg-3">
+          <div class="stat-card c-green">
+            <div class="accent-bar"></div>
+            <div class="stat-label">إجمالي المبيعات</div>
+            <div class="stat-value mt-1">12,480</div>
+            <div class="stat-trend text-success mt-1">↑ 8% من الشهر اللي فات</div>
+          </div>
+        </div>
+        <div class="col-6 col-lg-3">
+          <div class="stat-card c-orange">
+            <div class="accent-bar"></div>
+            <div class="stat-label">طلبات معلّقة</div>
+            <div class="stat-value mt-1">3</div>
+            <div class="stat-trend text-slate mt-1">في انتظار ردك</div>
+          </div>
+        </div>
+        <div class="col-6 col-lg-3">
+          <div class="stat-card c-blue">
+            <div class="accent-bar"></div>
+            <div class="stat-label">إجمالي الطلبات</div>
+            <div class="stat-value mt-1">47</div>
+            <div class="stat-trend text-slate mt-1">هذا الشهر</div>
+          </div>
+        </div>
+        <div class="col-6 col-lg-3">
+          <div class="stat-card c-purple">
+            <div class="accent-bar"></div>
+            <div class="stat-label">المنتجات النشطة</div>
+            <div class="stat-value mt-1">14</div>
+            <div class="stat-trend text-slate mt-1">من أصل 16 منتج</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row g-4">
+        <!-- recent orders -->
+        <div class="col-lg-7">
+          <div class="card-soft">
+            <div class="d-flex align-items-center justify-content-between p-4 pb-0">
+              <h2 class="h6 mb-0">آخر الطلبات</h2>
+              <a href="orders.html" class="text-accent fw-semibold" style="font-size:0.88rem;">عرض الكل</a>
+            </div>
+            <div class="mt-3">
+              <div class="order-row-mini">
+                <div class="customer-init">م</div>
+                <div class="order-info">
+                  <div class="cname">محمد أحمد</div>
+                  <div class="oid">#00485 · منذ 12 دقيقة</div>
+                </div>
+                <span class="badge-status badge-pending">معلّق</span>
+                <span class="price">320 ج.م</span>
+              </div>
+              <div class="order-row-mini">
+                <div class="customer-init">ن</div>
+                <div class="order-info">
+                  <div class="cname">نورهان علي</div>
+                  <div class="oid">#00484 · منذ 45 دقيقة</div>
+                </div>
+                <span class="badge-status badge-confirmed">مؤكد</span>
+                <span class="price">750 ج.م</span>
+              </div>
+              <div class="order-row-mini">
+                <div class="customer-init">ر</div>
+                <div class="order-info">
+                  <div class="cname">رانيا حسن</div>
+                  <div class="oid">#00483 · منذ 2 ساعة</div>
+                </div>
+                <span class="badge-status badge-shipped">في الشحن</span>
+                <span class="price">480 ج.م</span>
+              </div>
+              <div class="order-row-mini">
+                <div class="customer-init">أ</div>
+                <div class="order-info">
+                  <div class="cname">أحمد خالد</div>
+                  <div class="oid">#00482 · منذ 5 ساعات</div>
+                </div>
+                <span class="badge-status badge-delivered">تم التوصيل</span>
+                <span class="price">485 ج.م</span>
+              </div>
+              <div class="order-row-mini">
+                <div class="customer-init">س</div>
+                <div class="order-info">
+                  <div class="cname">سلمى ماهر</div>
+                  <div class="oid">#00481 · منذ 6 ساعات</div>
+                </div>
+                <span class="badge-status badge-cancelled">ملغي</span>
+                <span class="price">200 ج.م</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- quick actions + low stock -->
+        <div class="col-lg-5 d-flex flex-column gap-4">
+          <div class="card-soft p-4">
+            <h2 class="h6 mb-3">إجراءات سريعة</h2>
+            <div class="d-flex flex-column gap-2">
+              <a href="product-form.html" class="quick-action">
+                <div class="qa-icon" style="background:var(--accent-soft); color:var(--accent-dark);">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                </div>
+                <div>
+                  <div class="fw-semibold" style="font-size:0.92rem;">إضافة منتج جديد</div>
+                  <div class="text-slate" style="font-size:0.82rem;">أضف صورة، سعر، وكمية</div>
+                </div>
+              </a>
+              <a href="orders.html" class="quick-action">
+                <div class="qa-icon" style="background:#fdf3df; color:#a3700a;">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/></svg>
+                </div>
+                <div>
+                  <div class="fw-semibold" style="font-size:0.92rem;">مراجعة الطلبات المعلّقة</div>
+                  <div class="text-slate" style="font-size:0.82rem;">3 طلبات تنتظر ردك</div>
+                </div>
+              </a>
+            </div>
+          </div>
+
+          <!-- low stock warning -->
+          <div class="card-soft p-4">
+            <h2 class="h6 mb-3">تحذير: مخزون منخفض</h2>
+            <div class="d-flex flex-column gap-2">
+              <div class="d-flex justify-content-between align-items-center">
+                <span style="font-size:0.9rem;">طقم خواتم فضة</span>
+                <span class="badge-status badge-cancelled num">2 قطعة</span>
+              </div>
+              <div class="d-flex justify-content-between align-items-center">
+                <span style="font-size:0.9rem;">حلق دائري ذهبي</span>
+                <span class="badge-status badge-pending num">4 قطع</span>
+              </div>
+              <a href="products.html" class="btn btn-ghost btn-sm mt-2 text-center">إدارة المخزون</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div><!-- /dash-content -->
+</div><!-- /dash-layout -->
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

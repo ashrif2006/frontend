@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>إعدادات المتجر — دكّان</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Cairo:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link href="css/theme.css" rel="stylesheet">
+
+  <style>
+    body { font-family: "Plus Jakarta Sans","Cairo",sans-serif; }
+    h1,h2,h3,h4 { font-family: "Fraunces","Cairo",serif; }
+    .eyebrow,.num { font-family: "JetBrains Mono",monospace; }
+
+    .dash-layout { display:flex; min-height:100vh; }
+    .dash-sidebar-desktop { width:264px; flex-shrink:0; display:none; flex-direction:column; position:sticky; top:0; height:100vh; overflow-y:auto; }
+    @media (min-width:992px){ .dash-sidebar-desktop{ display:flex; } }
+    .dash-content { flex:1; min-width:0; display:flex; flex-direction:column; }
+    .dash-topbar { display:flex; align-items:center; justify-content:space-between; padding:0 1.5rem; gap:1rem; }
+    .topbar-avatar { width:38px; height:38px; border-radius:50%; background:var(--accent); color:#fff; display:flex; align-items:center; justify-content:center; font-family:"Fraunces",serif; font-weight:700; cursor:pointer; }
+
+    /* setup banner — shown only on first visit */
+    .setup-banner {
+      background: linear-gradient(135deg, var(--ink) 0%, #1d2c40 100%);
+      border-radius: var(--r-md);
+      padding: 1.4rem 1.6rem;
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+      margin-bottom: 1.75rem;
+      flex-wrap: wrap;
+    }
+    .setup-banner .banner-icon {
+      width: 48px; height: 48px; border-radius: var(--r-sm);
+      background: rgba(31,157,107,0.25);
+      color: var(--accent);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .setup-banner .banner-text { flex: 1; min-width: 200px; }
+    .setup-banner h5 { color: #fff; margin: 0 0 0.2rem; font-size: 1rem; }
+    .setup-banner p  { color: #9aa3b2; margin: 0; font-size: 0.88rem; }
+
+    /* form sections */
+    .form-section {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: var(--r-md);
+      padding: 1.6rem;
+      margin-bottom: 1.25rem;
+    }
+    .form-section-title {
+      font-weight: 700; font-size: 0.95rem;
+      margin-bottom: 1.2rem;
+      padding-bottom: 0.85rem;
+      border-bottom: 1px solid var(--line);
+      display: flex; align-items: center; gap: 0.6rem;
+      color: var(--ink);
+    }
+    .form-section-title svg { color: var(--accent-dark); }
+
+    /* logo upload */
+    .logo-upload-wrap { display: flex; align-items: center; gap: 1.4rem; flex-wrap: wrap; }
+    .logo-preview {
+      width: 88px; height: 88px;
+      border-radius: var(--r-md);
+      border: 2px dashed var(--line);
+      background: var(--paper-dim);
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+      flex-shrink: 0;
+      position: relative;
+      cursor: pointer;
+      transition: border-color 0.15s;
+    }
+    .logo-preview:hover { border-color: var(--accent); }
+    .logo-preview img { width: 100%; height: 100%; object-fit: cover; display: none; }
+    .logo-preview .logo-placeholder { display: flex; flex-direction: column; align-items: center; gap: 0.3rem; color: var(--slate-light); }
+    .logo-preview .logo-placeholder span { font-size: 0.7rem; font-weight: 600; text-align: center; }
+    .logo-remove {
+      position: absolute; top: 4px; left: 4px;
+      width: 22px; height: 22px; border-radius: 50%;
+      background: rgba(20,24,31,0.7); color: #fff;
+      border: none; cursor: pointer;
+      display: none; align-items: center; justify-content: center;
+      font-size: 0.7rem;
+    }
+
+    /* whatsapp input */
+    .input-group .wa-prefix {
+      background: #e8f9ef;
+      border: 1.5px solid var(--line);
+      color: #1a7a40;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.85rem;
+      padding: 0 0.85rem;
+      display: flex; align-items: center; gap: 0.4rem;
+    }
+
+    /* slug field */
+    .slug-live {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.82rem;
+      color: var(--slate);
+      background: var(--paper-dim);
+      border: 1.5px dashed var(--line);
+      border-radius: var(--r-sm);
+      padding: 0.5rem 0.8rem;
+      margin-top: 0.45rem;
+    }
+    .slug-live .slug-val { color: var(--accent-dark); font-weight: 600; }
+
+    /* danger zone */
+    .danger-zone {
+      border: 1.5px solid #fbd0c4;
+      border-radius: var(--r-md);
+      padding: 1.4rem 1.6rem;
+      background: #fff;
+    }
+    .danger-zone h5 { color: var(--warn); margin-bottom: 0.4rem; font-size: 0.95rem; }
+
+    /* sticky actions */
+    .actions-bar {
+      position: sticky; bottom: 0; z-index: 100;
+      background: #fff; border-top: 1px solid var(--line);
+      padding: 0.9rem 1.5rem;
+      display: flex; align-items: center; justify-content: flex-end; gap: 0.75rem;
+    }
+
+    /* progress steps (setup mode) */
+    .setup-steps {
+      display: flex; align-items: center; gap: 0;
+      margin-bottom: 1.75rem;
+    }
+    .setup-step {
+      display: flex; align-items: center; gap: 0.5rem;
+      font-size: 0.85rem; font-weight: 600; color: var(--slate-light);
+    }
+    .setup-step .s-num {
+      width: 26px; height: 26px; border-radius: 50%;
+      background: var(--paper-dim); border: 1.5px solid var(--line);
+      display: flex; align-items: center; justify-content: center;
+      font-family: "JetBrains Mono", monospace; font-size: 0.75rem; font-weight: 700;
+    }
+    .setup-step.done .s-num  { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .setup-step.active .s-num { background: var(--ink); border-color: var(--ink); color: #fff; }
+    .setup-step.active { color: var(--ink); }
+    .step-line { flex: 1; height: 1.5px; background: var(--line); min-width: 24px; max-width: 48px; margin: 0 0.4rem; }
+    .step-line.done { background: var(--accent); }
+  </style>
+</head>
+
+<body class="dash-body">
+<div class="dash-layout">
+
+  <!-- sidebar desktop -->
+  <aside class="dash-sidebar dash-sidebar-desktop">
+    <div class="brand"><span class="dot"></span> دكّان</div>
+    <nav class="dash-nav">
+      <span class="nav-section-label">الرئيسية</span>
+      <a href="dashboard.html" class="nav-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        لوحة التحكم
+      </a>
+      <span class="nav-section-label mt-2">المتجر</span>
+      <a href="products.html" class="nav-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+        المنتجات
+      </a>
+      <a href="orders.html" class="nav-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/><path d="M9 12h6M9 16h4"/></svg>
+        الطلبات
+        <span class="badge-count">3</span>
+      </a>
+      <a href="store-settings.html" class="nav-link active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        إعدادات المتجر
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="store-chip">
+        <div class="avatar">س</div>
+        <div><div class="fw-semibold text-white" style="font-size:0.9rem;">متجر سارة</div><small>sara-store</small></div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- offcanvas mobile -->
+  <div class="offcanvas offcanvas-end dash-sidebar" tabindex="-1" id="mobileSidebar" style="width:264px;">
+    <div class="offcanvas-header border-0 p-0">
+      <div class="brand w-100"><span class="dot"></span> دكّان
+        <button type="button" class="btn-close btn-close-white ms-auto" data-bs-dismiss="offcanvas"></button>
+      </div>
+    </div>
+    <nav class="dash-nav">
+      <a href="dashboard.html" class="nav-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        لوحة التحكم
+      </a>
+      <a href="products.html" class="nav-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+        المنتجات
+      </a>
+      <a href="orders.html" class="nav-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/></svg>
+        الطلبات <span class="badge-count">3</span>
+      </a>
+      <a href="store-settings.html" class="nav-link active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        إعدادات المتجر
+      </a>
+    </nav>
+    <div class="sidebar-footer mt-auto">
+      <div class="store-chip">
+        <div class="avatar">س</div>
+        <div><div class="fw-semibold text-white" style="font-size:0.9rem;">متجر سارة</div><small>sara-store</small></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======= MAIN ======= -->
+  <div class="dash-content">
+    <header class="dash-topbar">
+      <div class="d-flex align-items-center gap-3">
+        <button class="sidebar-toggle-btn mobile-only" data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <span style="font-weight:700; font-size:1rem;">إعدادات المتجر</span>
+      </div>
+      <div class="topbar-avatar">س</div>
+    </header>
+
+    <main class="dash-main pb-0">
+
+      <!-- setup progress (visible on first setup, hide after) -->
+      <div class="setup-steps" id="setupSteps">
+        <div class="setup-step done">
+          <div class="s-num">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          إنشاء الحساب
+        </div>
+        <div class="step-line done"></div>
+        <div class="setup-step active">
+          <div class="s-num">2</div>
+          إعداد المتجر
+        </div>
+        <div class="step-line"></div>
+        <div class="setup-step">
+          <div class="s-num">3</div>
+          إضافة منتجات
+        </div>
+      </div>
+
+      <!-- welcome banner -->
+      <div class="setup-banner">
+        <div class="banner-icon">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-6 9 6v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9z"/><path d="M9 21V12h6v9"/></svg>
+        </div>
+        <div class="banner-text">
+          <h5>أهلًا بيك! متجرك اتعمل ✓</h5>
+          <p>خلي دقيقة تكمّل بيانات المتجر — الشعار ورقم الواتساب بيضيفوا ثقة للعملاء بتوعك.</p>
+        </div>
+        <button class="btn btn-ghost btn-sm" style="color:#9aa3b2; flex-shrink:0;" onclick="document.getElementById('setupSteps').style.display='none'; this.closest('.setup-banner').style.display='none';">تخطّي</button>
+      </div>
+
+      <div class="row g-4 align-items-start">
+        <div class="col-lg-8">
+
+          <!-- store identity -->
+          <div class="form-section">
+            <div class="form-section-title">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-6 9 6v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9z"/></svg>
+              هوية المتجر
+            </div>
+
+            <!-- logo -->
+            <div class="mb-4">
+              <label class="form-label">شعار المتجر</label>
+              <div class="logo-upload-wrap">
+                <div class="logo-preview" id="logoPreview" onclick="document.getElementById('logoInput').click()">
+                  <img id="logoImg" alt="logo">
+                  <div class="logo-placeholder" id="logoPlaceholder">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                    <span>رفع شعار</span>
+                  </div>
+                  <button class="logo-remove" id="logoRemove" onclick="removeLogo(event)">✕</button>
+                </div>
+                <div>
+                  <button class="btn btn-ghost btn-sm" onclick="document.getElementById('logoInput').click()">اختار صورة</button>
+                  <input type="file" id="logoInput" accept="image/*" class="d-none">
+                  <p class="text-slate mt-2 mb-0" style="font-size:0.8rem;">PNG أو JPG — مربعة أحسن، حتى 2MB</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- store name -->
+            <div class="mb-3">
+              <label class="form-label">اسم المتجر <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" id="storeName" placeholder="اسم متجرك" required>
+            </div>
+
+            <!-- slug -->
+            <div class="mb-0">
+              <label class="form-label">رابط المتجر <span class="text-danger">*</span></label>
+              <div class="input-group">
+                <span class="input-group-text">dokkan.com/</span>
+                <input type="text" class="form-control" id="slugInput" placeholder="your-store" pattern="[a-z0-9\-]+">
+              </div>
+              <div class="slug-live">رابط متجرك: <span class="slug-val" id="slugDisplay">dokkan.com/sara-store</span></div>
+              <div class="text-slate mt-1" style="font-size:0.8rem;">حروف إنجليزية صغيرة وأرقام وـ(-) بس — تغيير الرابط ممكن يأثر على لينكات قديمة.</div>
+            </div>
+          </div>
+
+          <!-- contact -->
+          <div class="form-section">
+            <div class="form-section-title">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+              بيانات التواصل
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">رقم واتساب المتجر</label>
+              <div class="input-group">
+                <span class="wa-prefix input-group-text">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="#25d366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg>
+                  +20
+                </span>
+                <input type="tel" class="form-control" id="whatsappInput" placeholder="01012345678" pattern="[0-9]{10,11}">
+              </div>
+              <div class="text-slate mt-1" style="font-size:0.8rem;">الطلبات الجديدة هتوصلك على الرقم ده عبر واتساب.</div>
+            </div>
+
+            <div class="mb-0">
+              <label class="form-label">البريد الإلكتروني للأدمن</label>
+              <input type="email" class="form-control" id="adminEmailInput" disabled style="background:var(--paper-dim); color:var(--slate);">
+              <div class="text-slate mt-1" style="font-size:0.8rem;">البريد ده مش ممكن يتغير من هنا — تواصل مع الدعم لو محتاج.</div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- right: preview card + tips -->
+        <div class="col-lg-4">
+
+          <!-- store preview card -->
+          <div class="form-section mb-3" style="position:sticky; top:80px;">
+            <div class="form-section-title">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              معاينة المتجر
+            </div>
+            <div style="border:1.5px solid var(--line); border-radius:var(--r-sm); overflow:hidden;">
+              <!-- mock store header -->
+              <div style="background:var(--ink); padding:1.1rem 1rem; display:flex; align-items:center; gap:0.8rem;">
+                <div id="previewLogo" style="width:42px; height:42px; border-radius:var(--r-sm); background:var(--accent); display:flex; align-items:center; justify-content:center; font-family:'Fraunces',serif; font-weight:700; color:#fff; font-size:1.1rem; overflow:hidden;">
+                  س
+                </div>
+                <div>
+                  <div id="previewName" style="color:#fff; font-weight:700; font-size:0.95rem;">متجر سارة للإكسسوارات</div>
+                  <div id="previewSlug" style="color:#9aa3b2; font-size:0.75rem; font-family:'JetBrains Mono',monospace;">dokkan.com/sara-store</div>
+                </div>
+              </div>
+              <div style="padding:0.8rem 1rem; background:#fff;">
+                <div style="background:var(--paper-dim); border-radius:var(--r-sm); height:60px; display:flex; align-items:center; justify-content:center; color:var(--slate-light); font-size:0.82rem;">المنتجات ستظهر هنا</div>
+              </div>
+              <div style="padding:0.7rem 1rem; border-top:1px solid var(--line); display:flex; align-items:center; gap:0.5rem;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="#25d366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg>
+                <span id="previewWa" style="font-size:0.82rem; color:var(--slate); font-family:'JetBrains Mono',monospace;">لم يضف رقم واتساب بعد</span>
+              </div>
+            </div>
+
+            <div class="mt-3 p-3" style="background:var(--accent-soft); border-radius:var(--r-sm);">
+              <p class="mb-0" style="font-size:0.82rem; color:var(--accent-dark);">
+                <strong>نصيحة:</strong> المتاجر اللي عندها شعار ورقم واتساب بتحصل على ثقة أكتر من العملاء.
+              </p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- danger zone -->
+      <div class="col-lg-8 px-0 mt-2 mb-4">
+        <div class="danger-zone">
+          <h5>منطقة الخطر</h5>
+          <p class="text-slate mb-3" style="font-size:0.88rem;">حذف المتجر هيشيل كل المنتجات والطلبات والبيانات نهائيًا ومش ممكن ترجع منه.</p>
+          <button class="btn btn-danger-soft btn-sm" data-bs-toggle="modal" data-bs-target="#deleteStoreModal">حذف المتجر نهائيًا</button>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- sticky actions bar -->
+    <div class="actions-bar">
+      <button class="btn btn-ghost" onclick="history.back()">إلغاء</button>
+      <button class="btn btn-accent" id="saveBtn" onclick="saveSettings()">حفظ التغييرات</button>
+    </div>
+  </div>
+</div>
+
+<!-- delete store confirm modal -->
+<div class="modal fade" id="deleteStoreModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0" style="border-radius:var(--r-md); font-family:'Plus Jakarta Sans',sans-serif;">
+      <div class="modal-body p-4 text-center">
+        <div class="icon-wrap mx-auto mb-3" style="width:60px; height:60px; border-radius:50%; background:var(--warn-soft); color:var(--warn); display:flex; align-items:center; justify-content:center;">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+        </div>
+        <h5 class="mb-2">حذف المتجر نهائيًا؟</h5>
+        <p class="text-slate mb-3">هتتمسح كل المنتجات والطلبات والبيانات. مش ممكن ترجعها تاني.</p>
+        <div class="mb-4">
+          <label class="form-label text-start d-block" style="font-size:0.88rem;">اكتب <strong>sara-store</strong> للتأكيد</label>
+          <input type="text" class="form-control" id="deleteConfirmInput" placeholder="sara-store">
+        </div>
+        <div class="d-flex gap-2 justify-content-center">
+          <button class="btn btn-ghost" data-bs-dismiss="modal">إلغاء</button>
+          <button class="btn btn-danger-soft" id="confirmDeleteBtn" disabled>حذف المتجر</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- success toast -->
+<div class="toast-container position-fixed bottom-0 start-50 translate-middle-x mb-4" style="z-index:9999;">
+  <div id="saveToast" class="toast align-items-center border-0" style="background:var(--ink); color:#fff; border-radius:var(--r-sm);">
+    <div class="d-flex">
+      <div class="toast-body d-flex align-items-center gap-2">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        تم حفظ إعدادات المتجر بنجاح
+      </div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script type="module" src="./js/store-setting.js"></script>
+</body>
+</html>
