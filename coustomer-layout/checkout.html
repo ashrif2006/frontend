@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>إتمام الطلب — A7-store</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Cairo:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link href="css/theme.css" rel="stylesheet">
+
+  <style>
+    body { font-family: "Plus Jakarta Sans", "Cairo", sans-serif; }
+    h1,h2,h3,h4,.display { font-family: "Sora", "Cairo", sans-serif; }
+
+    .checkout-steps { display:flex; align-items:center; gap:0; margin-bottom:1.75rem; }
+    .checkout-step { display:flex; align-items:center; gap:0.5rem; font-size:0.85rem; font-weight:700; color:var(--slate-light); }
+    .checkout-step .cs-num {
+      width:26px; height:26px; border-radius:50%;
+      background:var(--paper-dim); border:1.5px solid var(--line);
+      display:flex; align-items:center; justify-content:center;
+      font-family:"JetBrains Mono",monospace; font-size:0.75rem; font-weight:700;
+    }
+    .checkout-step.done .cs-num { background:var(--primary); border-color:var(--primary); color:#fff; }
+    .checkout-step.active .cs-num { background:var(--ink); border-color:var(--ink); color:#fff; }
+    .checkout-step.active { color:var(--ink); }
+    .cs-line { flex:1; height:1.5px; background:var(--line); min-width:24px; max-width:60px; margin:0 0.5rem; }
+    .cs-line.done { background:var(--primary); }
+
+    .success-screen { text-align:center; padding: 4rem 1rem; }
+    .success-icon {
+      width:84px; height:84px; border-radius:50%;
+      background:var(--success-soft); color:var(--success);
+      display:flex; align-items:center; justify-content:center;
+      margin:0 auto 1.5rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===================== NAVBAR ===================== -->
+  <nav class="navbar navbar-expand-lg store-navbar sticky-top py-3">
+    <div class="container d-flex align-items-center justify-content-between gap-3">
+      <a href="store.html" class="brand-lockup">
+        <span class="a7-mark sm">A7</span>
+        <span>A7-store</span>
+      </a>
+    </div>
+  </nav>
+
+  <main class="container py-4">
+
+    <div class="checkout-steps">
+      <div class="checkout-step done">
+        <div class="cs-num"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+        السلة
+      </div>
+      <div class="cs-line done"></div>
+      <div class="checkout-step active">
+        <div class="cs-num">2</div>
+        بيانات التوصيل
+      </div>
+      <div class="cs-line"></div>
+      <div class="checkout-step">
+        <div class="cs-num">3</div>
+        تأكيد الطلب
+      </div>
+    </div>
+
+    <!-- ===================== CHECKOUT FORM (default view) ===================== -->
+    <div id="checkoutFormView">
+      <div class="row g-4">
+
+        <!-- left: customer form -->
+        <div class="col-lg-7">
+          <h1 class="h4 mb-3">بيانات التوصيل</h1>
+
+          <div class="mb-3">
+            <label class="form-label">الاسم بالكامل <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" id="customerName" placeholder="مثال: أحمد محمد" required>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">رقم التليفون <span class="text-danger">*</span></label>
+            <input type="tel" class="form-control" id="customerPhone" placeholder="01012345678" required>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">العنوان بالتفصيل <span class="text-danger">*</span></label>
+            <textarea class="form-control" id="customerAddress" rows="3" placeholder="المحافظة، المنطقة، الشارع، رقم المبنى، علامة مميزة…" required></textarea>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">ملاحظات على الطلب <small class="text-slate">(اختياري)</small></label>
+            <textarea class="form-control" id="customerNotes" rows="2" placeholder="أي تفاصيل إضافية تحب تقولها…"></textarea>
+          </div>
+
+          <div class="payment-method-card mb-3">
+            <div style="width:40px; height:40px; border-radius:50%; background:var(--success-soft); color:var(--success); display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M2 10h20"/></svg>
+            </div>
+            <div>
+              <div class="fw-bold" style="font-size:0.92rem;">الدفع عند الاستلام</div>
+              <div class="text-slate" style="font-size:0.82rem;">كاش — بدون أي رسوم إضافية</div>
+            </div>
+          </div>
+
+          <p class="text-danger mb-3" id="checkoutErrorMsg" style="display:none; font-size:0.88rem;"></p>
+
+          <button type="button" class="btn btn-primary-brand btn-lg btn-block" id="submitOrderBtn">
+            تأكيد الطلب
+          </button>
+        </div>
+
+        <!-- right: order summary -->
+        <div class="col-lg-5">
+          <div class="checkout-summary-card">
+            <h2 class="h6 mb-3">ملخص الطلب</h2>
+            <div id="checkoutLineItems">
+              <!-- rendered dynamically by js/checkout.js -->
+            </div>
+            <div class="pd-section-divider"></div>
+            <div class="cart-summary-row">
+              <span class="text-slate">المنتجات</span>
+              <span id="checkoutSubtotal">0 ج.م</span>
+            </div>
+            <div class="cart-summary-row">
+              <span class="text-slate">التوصيل</span>
+              <span class="text-slate">يحدده المتجر</span>
+            </div>
+            <div class="cart-summary-row total">
+              <span>الإجمالي</span>
+              <span id="checkoutTotal">0 ج.م</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ===================== SUCCESS VIEW (hidden until order placed) ===================== -->
+    <div id="checkoutSuccessView" style="display:none;">
+      <div class="success-screen">
+        <div class="success-icon">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <h1 class="h3 mb-2">تم استلام طلبك بنجاح! 🎉</h1>
+        <p class="text-slate mb-1">رقم الطلب: <strong id="successOrderId" class="num">—</strong></p>
+        <p class="text-slate mb-4">المتجر هيتواصل معاك قريب لتأكيد التفاصيل والتوصيل.</p>
+        <div class="d-flex gap-2 justify-content-center flex-wrap">
+          <a href="store.html" class="btn btn-outline-ink">رجوع للمتجر</a>
+          <a href="#" id="successWhatsappBtn" class="btn btn-primary-brand" target="_blank" style="display:none;">تواصل مع المتجر على واتساب</a>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script type="module" src="js/checkout.js"></script>
+</body>
+</html>

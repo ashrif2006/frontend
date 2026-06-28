@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (result.success) {
             alert('Login successful!');
-            // window.location.href = 'dashboard.html';
+            window.location.href = 'dashboard.html';
         } else {
             alert(result.message || 'Login failed. Please check your credentials and try again.');
             email.value="";

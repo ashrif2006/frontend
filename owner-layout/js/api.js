@@ -1,4 +1,4 @@
-const BASE_URL = "http://localhost:3000/api";
+const BASE_URL = "https://a7-store.vercel.app/api";
 
 function getHeader() {
   const token = localStorage.getItem("token");
@@ -68,6 +68,8 @@ export async function getStoreData() {
   }
 }
 
+// Updates store text fields: name, slug, whatsapp_number...
+// Matches: router.put("/", authenticate, updateStore)
 export async function updateStoreAPI(storeData) {
   try {
     const response = await fetch(`${BASE_URL}/store`, {
@@ -83,7 +85,8 @@ export async function updateStoreAPI(storeData) {
   }
 }
 
-
+// Uploads the store logo as multipart/form-data.
+// Matches: router.post("/logo", authenticate, upload.single(...), uploadLogo)
 export async function uploadLogoAPI(file) {
   try {
     const formData = new FormData();
@@ -116,6 +119,9 @@ export async function removeLogoAPI() {
   }
 }
 
+// Fetches the store's orders. Pass a status (e.g. "PENDING") to filter,
+// or omit it to get all orders.
+// Matches: router.get("/dashboard/orders", authenticate, getStoreOrders)
 export async function getOrdersAPI(status) {
   try {
     const url = status
@@ -133,7 +139,9 @@ export async function getOrdersAPI(status) {
   }
 }
 
-
+// Updates an order's status. status must be one of:
+// PENDING, CONFIRMED, SHIPPED, DELIVERED, CANCELLED
+// Matches: router.put("/orders/:id/status", authenticate, updateOrderStatus)
 export async function updateOrderStatusAPI(orderId, status) {
   try {
     const response = await fetch(`${BASE_URL}/orders/${orderId}/status`, {
@@ -146,5 +154,87 @@ export async function updateOrderStatusAPI(orderId, status) {
   } catch (e) {
     console.error("update order status error", e);
     return { ok: false, data: { message: "حدث خطأ في تحديث حالة الطلب" } };
+  }
+}
+
+// Fetches all of the logged-in owner's products.
+// Matches: router.get("/products", authenticate, getMyProducts)
+export async function getMyProductsAPI() {
+  try {
+    const response = await fetch(`${BASE_URL}/products`, {
+      method: "GET",
+      headers: getHeader(),
+    });
+    const data = await response.json();
+    return { ok: response.ok, data: data };
+  } catch (e) {
+    console.error("get products error", e);
+    return { ok: false, data: { message: "حدث خطأ في جلب المنتجات" } };
+  }
+}
+
+// Creates a new product with up to 3 images.
+// productData: { name, price, sale_price, description, stock }
+// imageFiles: array of File objects (max 3) — field name must be "images"
+// to match: upload.array("images", 3)
+// Matches: router.post("/products", authenticate, upload.array("images", 3), createProduct)
+export async function createProductAPI(productData, imageFiles) {
+  try {
+    const formData = new FormData();
+    Object.entries(productData).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        formData.append(key, value);
+      }
+    });
+    (imageFiles || []).forEach((file) => {
+      formData.append("images", file);
+    });
+
+    const response = await fetch(`${BASE_URL}/products`, {
+      method: "POST",
+      headers: getAuthHeaderOnly(),
+      body: formData,
+    });
+    const data = await response.json();
+    return { ok: response.ok, data: data };
+  } catch (e) {
+    console.error("create product error", e);
+    return { ok: false, data: { message: "حدث خطأ في إضافة المنتج" } };
+  }
+}
+
+// Updates a product's text fields only — this endpoint does NOT accept
+// image uploads (the backend's updateProduct service ignores files).
+// productData: { name, price, sale_price, description, stock, is_available }
+// Matches: router.put("/products/:id", authenticate, updateProduct)
+export async function updateProductAPI(productId, productData) {
+  try {
+    const response = await fetch(`${BASE_URL}/products/${productId}`, {
+      method: "PUT",
+      headers: getHeader(),
+      body: JSON.stringify(productData),
+    });
+    const data = await response.json();
+    return { ok: response.ok, data: data };
+  } catch (e) {
+    console.error("update product error", e);
+    return { ok: false, data: { message: "حدث خطأ في تحديث المنتج" } };
+  }
+}
+
+// Deletes a product (and its images on the server side).
+// Matches: router.delete("/products/:id", authenticate, deleteProduct)
+export async function deleteProductAPI(productId) {
+  try {
+    const response = await fetch(`${BASE_URL}/products/${productId}`, {
+      method: "DELETE",
+      headers: getHeader(),
+    });
+    const data = await response.json();
+    console.log(data);
+    return { ok: response.ok, data: data };
+  } catch (e) {
+    console.error("delete product error", e);
+    return { ok: false, data: { message: "حدث خطأ في حذف المنتج" } };
   }
 }

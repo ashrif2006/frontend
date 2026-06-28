@@ -1,5 +1,4 @@
-
-const BASE_URL = "http://localhost:3000/api"; 
+const BASE_URL = "https://a7-store.vercel.app/api";
 
 import {renderStoreInfo} from './ui.js';
 
@@ -55,6 +54,8 @@ export async function createOrder(slug, orderData) {
         if (!response.ok) {
             const errorData = await response.json().catch(() => ({}));
             throw new Error(errorData.message || `خطأ في إتمام الطلب: ${response.status}`);
+            console.log(errorData.message);
+            
         }
 
         const data = await response.json();

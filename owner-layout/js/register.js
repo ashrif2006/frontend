@@ -42,7 +42,7 @@ document.addEventListener("DOMContentLoaded", () => {
     console.log(result)
     if(result.success){
         alert("تم تسجيل الدخول بنجاح ");
-        // window.location.href = 'dashboard.html';
+        window.location.href = 'store-settings.html';
     }
     else{
         alert(result.message)

@@ -24,6 +24,10 @@ export async function handleRegister(ownerData){
         if(result.ok){
             return { success: true  };
         }
+        return {
+            success:false,
+            message : result.data?.message || "لا يمكن تسجيل الدخول"
+        }
     }catch(error){
         console.error('Register error:', error);
         return { success: false, message: 'Register failed' };
