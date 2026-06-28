@@ -44,7 +44,7 @@ function displayDataForStore(store) {
   slugInput.value = store.slug || "";
   whatsappInput.value = store.whatsapp_number || "";
 
-  slugDisplay.textContent = "dokkan.com/" + (store.slug || "your-store");
+  slugDisplay.textContent = "a7-coustomer.vercel.app/?store=" + (store.slug || "your-store");
   previewName.textContent = store.name || "اسم المتجر";
   previewSlug.textContent = "dokkan.com/" + (store.slug || "your-store");
   previewWa.textContent = store.whatsapp_number
